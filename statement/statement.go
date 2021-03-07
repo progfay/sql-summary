@@ -37,8 +37,10 @@ func splitStatement(data []byte, atEOF bool) (int, []byte, error) {
 	return 0, data, bufio.ErrFinalToken
 }
 
-func NewScanner(r io.Reader) *bufio.Scanner {
+func NewScanner(r io.Reader, bufferSize int) *bufio.Scanner {
 	scanner := bufio.NewScanner(r)
 	scanner.Split(splitStatement)
+	buf := make([]byte, bufferSize)
+	scanner.Buffer(buf, bufferSize)
 	return scanner
 }

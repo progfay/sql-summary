@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/progfay/sql-summary/statement"
+	"github.com/progfay/sqlsummary/statement"
 )
 
 type Testcase struct {
@@ -34,7 +34,7 @@ func Test_StatementScanner(t *testing.T) {
 		},
 		{
 			title: "single statement with multi-lines",
-			in:    `
+			in: `
 				SELECT
 					*
 				FROM
@@ -60,7 +60,7 @@ func Test_StatementScanner(t *testing.T) {
 		},
 		{
 			title: "many statement in each lines",
-			in:    `
+			in: `
 				SELECT * FROM users;
 				SELECT * FROM users;
 				SELECT * FROM users;
