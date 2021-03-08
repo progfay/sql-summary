@@ -7,7 +7,6 @@ import (
 
 	"github.com/pingcap/parser"
 	_ "github.com/pingcap/tidb/types/parser_driver"
-
 	// _ "github.com/pingcap/parser/test_driver"
 )
 
