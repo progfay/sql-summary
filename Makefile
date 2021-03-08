@@ -1,5 +1,4 @@
-clean:
-	rm sqlsummary
+all: build
 
-sqlsummary: clean
+build:
 	go build -o sqlsummary ./cmd/sqlsummary/main.go
