@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/pingcap/parser/ast"
+	"github.com/willf/pad"
 )
 
 var (
@@ -22,9 +23,28 @@ func summarize(node ast.StmtNode) (string, error) {
 		table := node.Table.TableRefs.Left.(*ast.TableSource).Source.(*ast.TableName).Name.String()
 		_, visited := alreadyInsertedTableMap[table]
 		if !visited {
+			columnLen := len(node.Lists[0])
+			columns := make([]string, columnLen)
+			if node.Columns == nil {
+				for i := 0; i < columnLen; i++ {
+					columns[i] = fmt.Sprintf("column%d", i)
+				}
+			} else {
+				for i := 0; i < columnLen; i++ {
+					columns[i] = node.Columns[i].String()
+				}
+			}
+
+			longestColumnNameLength := 0
+			for _, column := range columns {
+				if len(column) > longestColumnNameLength {
+					longestColumnNameLength = len(column)
+				}
+			}
+
 			summary.WriteString("-- Row example: (\n")
-			for _, item := range node.Lists[0] {
-				summary.WriteString("-- \t")
+			for i, item := range node.Lists[0] {
+				summary.WriteString(fmt.Sprintf("-- \t/* %s */\t", pad.Left(columns[i], longestColumnNameLength, " ")))
 				item.Format(&summary)
 				summary.WriteString("\n")
 			}
