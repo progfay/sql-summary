@@ -9,11 +9,10 @@ import (
 	_ "github.com/pingcap/tidb/types/parser_driver"
 
 	// _ "github.com/pingcap/parser/test_driver"
-	"github.com/progfay/sqlsummary/statement"
 )
 
 func Run(w io.Writer, src io.Reader, maxCapacity int) {
-	scanner := statement.NewScanner(src, maxCapacity)
+	scanner := NewStatementScanner(src, maxCapacity)
 
 	for scanner.Scan() {
 		statement := scanner.Text()

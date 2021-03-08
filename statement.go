@@ -1,4 +1,4 @@
-package statement
+package sqlsummary
 
 import (
 	"bufio"
@@ -37,7 +37,7 @@ func splitStatement(data []byte, atEOF bool) (int, []byte, error) {
 	return 0, data, bufio.ErrFinalToken
 }
 
-func NewScanner(r io.Reader, bufferSize int) *bufio.Scanner {
+func NewStatementScanner(r io.Reader, bufferSize int) *bufio.Scanner {
 	scanner := bufio.NewScanner(r)
 	scanner.Split(splitStatement)
 	buf := make([]byte, bufferSize)

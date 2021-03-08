@@ -1,4 +1,4 @@
-package statement_test
+package sqlsummary
 
 import (
 	"io"
@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/progfay/sqlsummary/statement"
 )
 
 type Testcase struct {
@@ -106,7 +105,7 @@ func Test_StatementScanner(t *testing.T) {
 		},
 	} {
 		t.Run(testcase.title, func(t *testing.T) {
-			scanner := statement.NewScanner(strings.NewReader(testcase.in))
+			scanner := NewStatementScanner(strings.NewReader(testcase.in), 1024)
 
 			got := make([]string, 0)
 			for scanner.Scan() {
