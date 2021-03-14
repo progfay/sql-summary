@@ -1,4 +1,4 @@
-package summarize
+package summarizer
 
 import (
 	"io"

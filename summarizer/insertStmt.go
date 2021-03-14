@@ -1,4 +1,4 @@
-package summarize
+package summarizer
 
 import (
 	"fmt"
@@ -10,8 +10,6 @@ import (
 
 var (
 	insertStmtTableNameNotFoundErr = fmt.Errorf("table name is not found in *ast.InsertStmt")
-
-	alreadyInsertedTableMap = make(map[string]struct{})
 )
 
 func getInsertStmtTableName(node *ast.InsertStmt) (string, error) {
@@ -28,14 +26,14 @@ func getInsertStmtTableName(node *ast.InsertStmt) (string, error) {
 	return tableName.Name.String(), nil
 }
 
-func summarizeInsertStmt(node *ast.InsertStmt) (string, error) {
+func (s *Summarizer) summarizeInsertStmt(node *ast.InsertStmt) (string, error) {
 	var summary strings.Builder
 	summary.WriteString(fmt.Sprintf("-- Insert rows count: %d\n", len(node.Lists)))
 
 	var visited bool = false
 	table, err := getInsertStmtTableName(node)
 	if err == nil {
-		_, visited = alreadyInsertedTableMap[table]
+		_, visited = s.alreadyInsertedTableMap[table]
 	}
 
 	if !visited {
@@ -65,7 +63,7 @@ func summarizeInsertStmt(node *ast.InsertStmt) (string, error) {
 			summary.WriteString("\n")
 		}
 		summary.WriteString("-- )\n")
-		alreadyInsertedTableMap[table] = struct{}{}
+		s.alreadyInsertedTableMap[table] = struct{}{}
 	}
 
 	node.Lists = nil
