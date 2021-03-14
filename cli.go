@@ -52,19 +52,19 @@ func Run(w io.Writer, src io.Reader, maxCapacity int) {
 }
 
 func parseStatement(statement string) (ast.StmtNode, error) {
-		p := parser.New()
-		nodes, _, err := p.Parse(statement, "", "")
-		if err != nil {
-			return nil, fmt.Errorf("error occurred, skip summarizing: %w", err)
-		}
+	p := parser.New()
+	nodes, _, err := p.Parse(statement, "", "")
+	if err != nil {
+		return nil, fmt.Errorf("error occurred, skip summarizing: %w", err)
+	}
 
-		if len(nodes) == 0 {
-			return nil, onlyCommentErr
-		}
+	if len(nodes) == 0 {
+		return nil, onlyCommentErr
+	}
 
-		if len(nodes) > 1 {
-			return nil, fmt.Errorf("StatementScanner.Text() return SQL Query with multiple statements, skip summarizing: %q", statement)
-		}
+	if len(nodes) > 1 {
+		return nil, fmt.Errorf("StatementScanner.Text() return SQL Query with multiple statements, skip summarizing: %q", statement)
+	}
 
-		return nodes[0], nil
+	return nodes[0], nil
 }
