@@ -1,4 +1,4 @@
-package sqlsummary
+package summarize
 
 import (
 	"fmt"
@@ -9,26 +9,35 @@ import (
 )
 
 var (
+	insertStmtTableNameNotFoundErr = fmt.Errorf("table name is not found in *ast.InsertStmt")
+
 	alreadyInsertedTableMap = make(map[string]struct{})
 )
 
-func summarize(node ast.StmtNode) (string, error) {
-	switch node.(type) {
-	case *ast.InsertStmt:
-		node := node.(*ast.InsertStmt)
-		return summarizeInsertStmt(node)
-
-	default:
-		return "", nil
+func getInsertStmtTableName(node *ast.InsertStmt) (string, error) {
+	tableSource, ok := node.Table.TableRefs.Left.(*ast.TableSource)
+	if !ok {
+		return "", insertStmtTableNameNotFoundErr
 	}
+
+	tableName, ok := tableSource.Source.(*ast.TableName)
+	if !ok {
+		return "", insertStmtTableNameNotFoundErr
+	}
+
+	return tableName.Name.String(), nil
 }
 
 func summarizeInsertStmt(node *ast.InsertStmt) (string, error) {
 	var summary strings.Builder
 	summary.WriteString(fmt.Sprintf("-- Insert rows count: %d\n", len(node.Lists)))
 
-	table := node.Table.TableRefs.Left.(*ast.TableSource).Source.(*ast.TableName).Name.String()
-	_, visited := alreadyInsertedTableMap[table]
+	var visited bool = false
+	table, err := getInsertStmtTableName(node)
+	if err != nil {
+		_, visited = alreadyInsertedTableMap[table]
+	}
+
 	if !visited {
 		columnLen := len(node.Lists[0])
 		columns := make([]string, columnLen)
@@ -61,7 +70,7 @@ func summarizeInsertStmt(node *ast.InsertStmt) (string, error) {
 
 	node.Lists = nil
 
-	err := restore(&summary, node)
+	err = restore(&summary, node)
 	if err != nil {
 		return "", err
 	}

@@ -7,6 +7,7 @@ import (
 
 	"github.com/pingcap/parser"
 	_ "github.com/pingcap/tidb/types/parser_driver"
+	"github.com/progfay/sqlsummary/summarize"
 	// _ "github.com/pingcap/parser/test_driver"
 )
 
@@ -23,7 +24,7 @@ func Run(w io.Writer, src io.Reader, maxCapacity int) {
 		}
 
 		for _, node := range nodes {
-			summary, err := summarize(node)
+			summary, err := summarize.Summarize(node)
 			if err != nil {
 				log.Println(err)
 				continue

@@ -1,4 +1,4 @@
-package sqlsummary
+package summarize
 
 import (
 	"io"
