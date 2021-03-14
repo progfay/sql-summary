@@ -34,7 +34,7 @@ func summarizeInsertStmt(node *ast.InsertStmt) (string, error) {
 
 	var visited bool = false
 	table, err := getInsertStmtTableName(node)
-	if err != nil {
+	if err == nil {
 		_, visited = alreadyInsertedTableMap[table]
 	}
 
