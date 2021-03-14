@@ -29,7 +29,7 @@ func Run(w io.Writer, src io.Reader, maxCapacity int) {
 				continue
 			}
 
-			fmt.Fprintln(w, summary + ";")
+			fmt.Fprintln(w, summary+";")
 		}
 	}
 }
