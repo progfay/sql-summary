@@ -1,6 +1,7 @@
 package sqlsummary
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -26,8 +27,12 @@ func Run(w io.Writer, src io.Reader, maxCapacity int) {
 		for _, node := range nodes {
 			summary, err := summarize.Summarize(node)
 			if err != nil {
-				log.Println(err)
-				continue
+				if errors.Is(err, summarize.NoChangeErr) {
+					summary = statement
+				} else {
+					log.Println(err)
+					continue
+				}
 			}
 
 			fmt.Fprintln(w, summary+";")

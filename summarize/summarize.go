@@ -1,7 +1,13 @@
 package summarize
 
 import (
+	"fmt"
+
 	"github.com/pingcap/parser/ast"
+)
+
+var (
+	NoChangeErr = fmt.Errorf("no change")
 )
 
 func Summarize(node ast.StmtNode) (string, error) {
@@ -11,6 +17,6 @@ func Summarize(node ast.StmtNode) (string, error) {
 		return summarizeInsertStmt(node)
 
 	default:
-		return "", nil
+		return "", NoChangeErr
 	}
 }
