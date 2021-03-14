@@ -14,30 +14,46 @@ import (
 
 func Run(w io.Writer, src io.Reader, maxCapacity int) {
 	scanner := NewStatementScanner(src, maxCapacity)
+	s := summarizer.New()
 
 	for scanner.Scan() {
 		statement := scanner.Text()
 
 		p := parser.New()
-		nodes, _, err := p.Parse(statement, "", "")
+		node, warns, err := p.Parse(statement, "", "")
 		if err != nil {
-			log.Println(err)
+			log.Printf("error occuerred, skip summarizing: %v\n", err)
+			fmt.Fprint(w, statement+";")
+			continue
 		}
 
-		s := summarizer.New()
+		for _, warn := range warns {
+			log.Println(warn)
+		}
 
-		for _, node := range nodes {
-			summary, err := s.Summarize(node)
-			if err != nil {
-				if errors.Is(err, summarizer.NoChangeErr) {
-					summary = statement
-				} else {
-					log.Println(err)
-					continue
-				}
+		if len(node) == 0 {
+			// statement only has comments.
+			fmt.Fprint(w, statement)
+			continue
+		}
+
+		if len(node) > 1 {
+			log.Printf("StatementScanner.Text() return SQL Query with multiple statements, skip summarizing: %q\n", statement)
+			fmt.Fprint(w, statement+";")
+			continue
+		}
+
+		summary, err := s.Summarize(node[0])
+		if err != nil {
+			if errors.Is(err, summarizer.NoChangeErr) {
+				fmt.Fprint(w, statement+";")
+				continue
 			}
 
-			fmt.Fprintln(w, summary+";")
+			log.Println(err)
+			continue
 		}
+
+		fmt.Fprintln(w, "\n"+summary+";")
 	}
 }
