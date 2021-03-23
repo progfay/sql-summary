@@ -17,6 +17,19 @@ var (
 	onlyCommentErr = fmt.Errorf("comment only")
 )
 
+type multiStatementErr struct {
+    S string
+}
+
+func (e *multiStatementErr) Error() string {
+	return fmt.Sprintf("StatementScanner.Text() return SQL Query with multiple statements, skip summarizing: %q", e.S)
+}
+
+func (e *multiStatementErr) Is(target error) bool {
+	t, ok := target.(*multiStatementErr)
+	return ok && e.S == t.S
+}
+
 func Run(w io.Writer, src io.Reader, maxCapacity int) {
 	scanner := NewStatementScanner(src, maxCapacity)
 	s := summarizer.New()
@@ -63,7 +76,7 @@ func parseStatement(statement string) (ast.StmtNode, error) {
 	}
 
 	if len(nodes) > 1 {
-		return nil, fmt.Errorf("StatementScanner.Text() return SQL Query with multiple statements, skip summarizing: %q", statement)
+		return nil, &multiStatementErr{S: statement}
 	}
 
 	return nodes[0], nil
