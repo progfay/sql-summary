@@ -18,7 +18,7 @@ var (
 )
 
 type multiStatementErr struct {
-    S string
+	S string
 }
 
 func (e *multiStatementErr) Error() string {

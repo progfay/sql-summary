@@ -5,28 +5,28 @@ import (
 	"testing"
 )
 
-func Test_parseStatement (t *testing.T) {
-	for _, testcase := range []struct{
+func Test_parseStatement(t *testing.T) {
+	for _, testcase := range []struct {
 		title string
-		in string
-		want error
+		in    string
+		want  error
 	}{
 		{
 			title: "One statement",
-			in: "SELECT * FROM users",
-			want: nil,
+			in:    "SELECT * FROM users",
+			want:  nil,
 		},
 		{
 			title: "Many Statements",
-			in: "SELECT * FROM users; SELECT * FROM users",
-			want: &multiStatementErr{S: "SELECT * FROM users; SELECT * FROM users"},
+			in:    "SELECT * FROM users; SELECT * FROM users",
+			want:  &multiStatementErr{S: "SELECT * FROM users; SELECT * FROM users"},
 		},
 		{
 			title: "Only comments",
-			in: "-- Comments\n/* Comments */",
-			want: onlyCommentErr,
+			in:    "-- Comments\n/* Comments */",
+			want:  onlyCommentErr,
 		},
-	}{
+	} {
 		t.Run(testcase.title, func(t *testing.T) {
 			_, err := parseStatement(testcase.in)
 
