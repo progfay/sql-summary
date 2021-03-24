@@ -1,9 +1,9 @@
 package sqlsummary
 
 import (
+	"bytes"
 	"errors"
 	"io"
-	"strings"
 )
 
 type StatementScanner struct {
@@ -11,7 +11,7 @@ type StatementScanner struct {
 	insideDoubleQuote bool
 	insideBackQuote   bool
 	escape            bool
-	text              strings.Builder
+	text              bytes.Buffer
 	buf               []byte
 	n                 int
 	err               error
@@ -37,7 +37,6 @@ func (s *StatementScanner) Scan() bool {
 					continue
 				}
 				s.n -= i + 1
-				s.text.Grow(i + 1)
 				s.text.Write(s.buf[:i])
 				s.buf = s.buf[i+1:]
 				return true
@@ -56,7 +55,6 @@ func (s *StatementScanner) Scan() bool {
 			}
 		}
 
-		s.text.Grow(s.n)
 		s.text.Write(s.buf[:s.n])
 		s.n = 0
 
@@ -80,7 +78,6 @@ func (s *StatementScanner) Err() error {
 
 func NewStatementScanner(r io.Reader, maxCapacity int) *StatementScanner {
 	return &StatementScanner{
-		text: strings.Builder{},
 		buf:  make([]byte, maxCapacity),
 		r:    r,
 	}
